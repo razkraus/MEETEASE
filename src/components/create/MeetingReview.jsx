@@ -1,5 +1,3 @@
-
-import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar, MapPin, Clock, Users, Mail, File, Download } from "lucide-react"; // Removed Paperclip as it's not used in the final render
@@ -156,7 +154,7 @@ export default function MeetingReview({ data }) {
 
       <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
         <p className="text-blue-800 text-sm">
-          <strong>לתשומת לבך:</strong> לאחר הלחיצה על "שלח הזמנות", כל המשתתפים יקבלו הזמנה עם כל המועדים המוצעים{data.attachments && data.attachments.length > 0 ? ' והקבצים המצורפים' : ''}. 
+          <strong>לתשומת לבך:</strong> לאחר הלחיצה על "שלח הזמנות", כל המשתתפים יקבלו הזמנה עם כל המועדים המוצעים{data.attachments && data.attachments.length > 0 ? ' והקבצים המצורפים' : ''}.
           הם יוכלו לסמן אילו מועדים מתאימים להם, ולאחר מכן תוכל לקבוע את המועד הסופי.
         </p>
       </div>

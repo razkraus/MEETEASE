@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Contact, User } from '@/api/entities';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';

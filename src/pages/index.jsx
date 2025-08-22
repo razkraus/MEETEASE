@@ -28,6 +28,10 @@ import CheckAvailability from "./CheckAvailability";
 
 import ContactUs from "./ContactUs";
 
+import OfficeBranding from "./OfficeBranding";
+
+import OfficePayment from "./OfficePayment";
+
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 
 const PAGES = {
@@ -55,11 +59,15 @@ const PAGES = {
     MeetingHistory: MeetingHistory,
     
     Home: Home,
-    
+
     CheckAvailability: CheckAvailability,
-    
+
     ContactUs: ContactUs,
-    
+
+    OfficeBranding: OfficeBranding,
+
+    OfficePayment: OfficePayment,
+
 }
 
 function _getCurrentPage(url) {
@@ -112,10 +120,13 @@ function PagesContent() {
                 <Route path="/Home" element={<Home />} />
                 
                 <Route path="/CheckAvailability" element={<CheckAvailability />} />
-                
+
                 <Route path="/ContactUs" element={<ContactUs />} />
-                
-            </Routes>
+
+                <Route path="/OfficeBranding" element={<OfficeBranding />} />
+                <Route path="/OfficePayment" element={<OfficePayment />} />
+
+                </Routes>
         </Layout>
     );
 }

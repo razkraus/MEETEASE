@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Meeting, Response, User } from "@/api/entities";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Calendar, History, Home } from "lucide-react";
@@ -24,13 +24,13 @@ export default function MeetingHistoryPage() {
     try {
       const currentUser = await User.me();
       setUser(currentUser);
-      
+
       if (currentUser.organization_id) {
         const [meetingsData, responsesData] = await Promise.all([
           Meeting.filter({ organization_id: currentUser.organization_id }, "-created_date"),
           Response.list("-created_date")
         ]);
-        
+
         // סינון ישיבות שעברו
         const currentDate = new Date();
         const pastMeetings = meetingsData.filter(meeting => {
@@ -40,7 +40,7 @@ export default function MeetingHistoryPage() {
           }
           return false;
         });
-        
+
         setMeetings(pastMeetings);
         setResponses(responsesData);
       }
@@ -50,10 +50,10 @@ export default function MeetingHistoryPage() {
     setIsLoading(false);
   };
 
-  const completedMeetings = meetings.filter(m => 
+  const completedMeetings = meetings.filter(m =>
     m.status === 'confirmed' && m.final_date && new Date(m.final_date) < new Date()
   );
-  
+
   const cancelledMeetings = meetings.filter(m => m.status === 'cancelled');
 
   return (
@@ -98,7 +98,7 @@ export default function MeetingHistoryPage() {
                   onUpdate={loadData}
                 />
               ))}
-              
+
               {completedMeetings.length === 0 && (
                 <div className="meetiz-card rounded-2xl p-12 text-center">
                   <div className="w-16 h-16 mx-auto mb-4 bg-green-100 rounded-full flex items-center justify-center">
@@ -125,7 +125,7 @@ export default function MeetingHistoryPage() {
                   onUpdate={loadData}
                 />
               ))}
-              
+
               {cancelledMeetings.length === 0 && (
                 <div className="meetiz-card rounded-2xl p-12 text-center">
                   <div className="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">

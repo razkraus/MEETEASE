@@ -1,23 +1,86 @@
-import { base44 } from './base44Client';
+// Local in-browser storage based entities to replace Base44 SDK
 
+function createLocalEntity(key) {
+  const load = () => {
+    try {
+      return JSON.parse(localStorage.getItem(key) || '[]');
+    } catch {
+      return [];
+    }
+  };
 
-export const Meeting = base44.entities.Meeting;
+  const save = (data) => {
+    localStorage.setItem(key, JSON.stringify(data));
+  };
 
-export const Response = base44.entities.Response;
+  return {
+    list: async () => load(),
+    filter: async (query = {}) => {
+      return load().filter(item =>
+        Object.entries(query).every(([k, v]) => {
+          if (Array.isArray(v)) return v.includes(item[k]);
+          return item[k] === v;
+        })
+      );
+    },
+    get: async (id) => load().find(item => item.id === id),
+    create: async (obj) => {
+      const data = load();
+      const newObj = { id: Date.now().toString(), ...obj };
+      data.push(newObj);
+      save(data);
+      return newObj;
+    },
+    update: async (id, updates) => {
+      const data = load();
+      const idx = data.findIndex(item => item.id === id);
+      if (idx === -1) return null;
+      data[idx] = { ...data[idx], ...updates };
+      save(data);
+      return data[idx];
+    }
+  };
+}
 
-export const Organization = base44.entities.Organization;
+export const Meeting = createLocalEntity('meetings');
+export const Response = createLocalEntity('responses');
+export const Organization = createLocalEntity('organizations');
+export const Customer = createLocalEntity('customers');
+export const Contact = createLocalEntity('contacts');
+export const TeamMember = createLocalEntity('team_members');
+export const Notification = createLocalEntity('notifications');
+export const Feedback = createLocalEntity('feedback');
 
-export const Customer = base44.entities.Customer;
+const baseUser = createLocalEntity('users');
 
-export const Contact = base44.entities.Contact;
+const defaultUser = {
+  id: 'local-user',
+  email: 'user@example.com',
+  full_name: 'Local User',
+  organization_id: null,
+  can_create_meetings: true,
+};
 
-export const TeamMember = base44.entities.TeamMember;
+export const User = {
+  ...baseUser,
+  me: async () => {
+    const stored = localStorage.getItem('currentUser');
+    if (stored) return JSON.parse(stored);
 
-export const Notification = base44.entities.Notification;
-
-export const Feedback = base44.entities.Feedback;
-
-
-
-// auth sdk:
-export const User = base44.auth;
+    // ensure the default user exists in storage
+    const users = await baseUser.list();
+    if (!users.find(u => u.id === defaultUser.id)) {
+      users.push(defaultUser);
+      localStorage.setItem('users', JSON.stringify(users));
+    }
+    localStorage.setItem('currentUser', JSON.stringify(defaultUser));
+    return defaultUser;
+  },
+  update: async (data) => {
+    const current = await User.me();
+    const updated = { ...current, ...data };
+    await baseUser.update(current.id, updated);
+    localStorage.setItem('currentUser', JSON.stringify(updated));
+    return updated;
+  }
+};

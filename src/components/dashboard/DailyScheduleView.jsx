@@ -1,4 +1,3 @@
-import React from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Clock, MapPin, Users, Calendar as CalendarIcon } from "lucide-react";
@@ -46,7 +45,7 @@ export default function DailyScheduleView({ meetings, selectedDate }) {
                     {slot.time}
                   </span>
                 </div>
-                
+
                 {/* תוכן השעה */}
                 <div className="flex-1 min-h-[44px] p-1.5 flex items-center">
                   {slot.meetings.length > 0 ? (
@@ -64,7 +63,7 @@ export default function DailyScheduleView({ meetings, selectedDate }) {
                               {format(parseISO(meeting.final_date), "HH:mm")}
                             </Badge>
                           </div>
-                          
+
                           <div className="space-y-0.5 text-xs text-slate-600">
                             {meeting.location && (
                               <div className="flex items-center gap-1">
@@ -96,7 +95,7 @@ export default function DailyScheduleView({ meetings, selectedDate }) {
             </div>
           ))}
         </div>
-        
+
         {dayMeetings.length === 0 && (
           <div className="text-center py-6 text-slate-500">
             <CalendarIcon className="w-8 h-8 mx-auto text-slate-300 mb-2" />

@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Meeting, Response, User } from "@/api/entities"; // Added User import
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -29,27 +28,27 @@ export default function MyMeetings() {
     setIsLoading(true);
     try {
       const currentUser = await User.me();
-      
+
       // Get all meetings for the organization
       const allMeetings = await Meeting.list("-created_date");
-      
+
       // Filter to show only meetings created by current user OR where user is a participant
       const userMeetings = allMeetings.filter(meeting => {
         // Show if user created the meeting
         if (meeting.created_by === currentUser.email) {
           return true;
         }
-        
+
         // Show if user is a participant
         if (meeting.participants && Array.isArray(meeting.participants) && meeting.participants.some(p => p.email === currentUser.email)) {
           return true;
         }
-        
+
         return false;
       });
-      
+
       setMeetings(userMeetings);
-      
+
       // Get responses only for meetings the user can see
       let responsesData = [];
       if (userMeetings.length > 0) {

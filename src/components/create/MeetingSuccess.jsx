@@ -1,10 +1,10 @@
-
-import React, { useState } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, Copy, Share2, Mail, ExternalLink } from "lucide-react";
 import { format } from "date-fns";
 import { he } from "date-fns/locale";
+import CalendarButtons from "@/components/meetings/CalendarButtons";
 
 export default function MeetingSuccess({ meeting }) {
   const [copiedLinks, setCopiedLinks] = useState(new Set());
@@ -34,7 +34,7 @@ export default function MeetingSuccess({ meeting }) {
   const shareViaEmail = (participant) => {
     const subject = `🗓️ הזמנה לישיבה: ${meeting.title}`;
     const body = `היי ${participant.name}!\n\nהוזמנת לישיבה חדשה.\n\nפרטי הישיבה:\n📅 ${meeting.title}\n⏰ משך: ${meeting.duration_minutes} דקות\n👥 משתתפים: ${meeting.participants?.length || 0} אנשים\n\nאנא לחץ על הקישור כדי לבחור מועדים שמתאימים לך:\n${participant.link}\n\nתודה!`;
-    
+
     const mailtoUrl = `mailto:${participant.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     window.location.href = mailtoUrl;
   };
@@ -60,7 +60,7 @@ export default function MeetingSuccess({ meeting }) {
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
             <h3 className="font-semibold text-blue-900 mb-2">📤 שיתוף הזמנות</h3>
             <p className="text-blue-800 text-sm">
-              לא ניתן לשלוח מיילים אוטומטית למשתתפים חיצוניים. 
+              לא ניתן לשלוח מיילים אוטומטית למשתתפים חיצוניים.
               אנא שתף איתם את קישורי ההזמנה באמצעות הכפתורים למטה.
             </p>
           </div>
@@ -77,7 +77,7 @@ export default function MeetingSuccess({ meeting }) {
                         <p className="text-sm text-slate-600">{participant.email}</p>
                       </div>
                     </div>
-                    
+
                     <div className="bg-slate-50 rounded p-3 mb-3">
                       <p className="text-xs text-slate-600 mb-2">קישור הזמנה:</p>
                       <p className="text-sm font-mono text-slate-800 break-all">
@@ -95,7 +95,7 @@ export default function MeetingSuccess({ meeting }) {
                         <Copy className="w-4 h-4" />
                         {copiedLinks.has(participant.email) ? 'הועתק!' : 'העתק קישור'}
                       </Button>
-                      
+
                       <Button
                         variant="outline"
                         size="sm"
@@ -105,7 +105,7 @@ export default function MeetingSuccess({ meeting }) {
                         <Share2 className="w-4 h-4" />
                         שתף בוואטסאפ
                       </Button>
-                      
+
                       <Button
                         variant="outline"
                         size="sm"
@@ -122,11 +122,13 @@ export default function MeetingSuccess({ meeting }) {
             </div>
           )}
 
+          <CalendarButtons event={meeting} />
+
           <div className="text-center pt-4 border-t border-slate-200">
             <p className="text-sm text-slate-600 mb-4">
               לאחר ששתפת את הקישורים, תוכל לעקוב אחר התגובות בדשבורד
             </p>
-            <Button 
+            <Button
               onClick={() => window.location.href = '/Dashboard'}
               className="meetiz-button-primary text-white"
             >
