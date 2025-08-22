@@ -1,22 +1,34 @@
-import { base44 } from './base44Client';
+// Local stub implementations for integration utilities
 
+export const InvokeLLM = async (prompt) => {
+  console.info('InvokeLLM stub called with:', prompt);
+  return 'Local mode does not support LLM calls';
+};
 
+export const SendEmail = async (payload) => {
+  console.info('SendEmail stub called with:', payload);
+  return { status: 'queued' };
+};
 
+export const UploadFile = async (file) => {
+  console.info('UploadFile stub called with:', file?.name || file);
+  return { url: URL.createObjectURL(file) };
+};
 
-export const Core = base44.integrations.Core;
+export const GenerateImage = async (prompt) => {
+  console.info('GenerateImage stub called with:', prompt);
+  return { url: '' };
+};
 
-export const InvokeLLM = base44.integrations.Core.InvokeLLM;
+export const ExtractDataFromUploadedFile = async (file) => {
+  console.info('ExtractDataFromUploadedFile stub called with:', file?.name || file);
+  return {};
+};
 
-export const SendEmail = base44.integrations.Core.SendEmail;
-
-export const UploadFile = base44.integrations.Core.UploadFile;
-
-export const GenerateImage = base44.integrations.Core.GenerateImage;
-
-export const ExtractDataFromUploadedFile = base44.integrations.Core.ExtractDataFromUploadedFile;
-
-
-
-
-
-
+export const Core = {
+  InvokeLLM,
+  SendEmail,
+  UploadFile,
+  GenerateImage,
+  ExtractDataFromUploadedFile,
+};

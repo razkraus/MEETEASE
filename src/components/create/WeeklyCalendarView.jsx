@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Button } from "@/components/ui/button";
 import { format, addDays, startOfWeek, addWeeks, subWeeks, setHours, setMinutes, isToday, isBefore, isEqual, startOfDay } from 'date-fns';
 import { he } from 'date-fns/locale';

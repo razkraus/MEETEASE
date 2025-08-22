@@ -1,4 +1,3 @@
-import React from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
 const colorClasses = {
@@ -8,13 +7,13 @@ const colorClasses = {
     light: "bg-blue-50"
   },
   green: {
-    bg: "bg-green-500", 
+    bg: "bg-green-500",
     text: "text-green-500",
     light: "bg-green-50"
   },
   orange: {
     bg: "bg-orange-500",
-    text: "text-orange-500", 
+    text: "text-orange-500",
     light: "bg-orange-50"
   },
   purple: {

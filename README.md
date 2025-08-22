@@ -1,8 +1,6 @@
-# Base44 App
+# MeetEase
 
-
-This app was created automatically by Base44.
-It's a Vite+React app that communicates with the Base44 API.
+This app is a Vite + React application configured to run locally without any external Base44 dependencies.
 
 ## Running the app
 
@@ -17,4 +15,12 @@ npm run dev
 npm run build
 ```
 
-For more information and support, please contact Base44 support at app@base44.com.
+## Quality checks
+
+```bash
+npm test
+npm run lint
+```
+
+For more information and support, please contact the project maintainers.
+
