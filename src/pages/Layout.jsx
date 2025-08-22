@@ -1,6 +1,4 @@
 
-
-import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { Calendar, Plus, Users, Settings, Home, Contact, UserCog, Crown, Menu, Bell, History, Search, LifeBuoy } from "lucide-react"; // Added LifeBuoy
@@ -139,25 +137,25 @@ export default function Layout({ children, currentPageName }) {
                 --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
                 --card-shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
               }
-              
+
               /* תיקונים עבור RTL */
               * {
                 text-align: right;
               }
-              
+
               .text-left {
                 text-align: left !important;
               }
-              
+
               .text-center {
                 text-align: center !important;
               }
-              
+
               input, textarea, select {
                 text-align: right;
                 direction: rtl;
               }
-              
+
               .meetiz-card {
                 background: rgba(255, 255, 255, 0.95);
                 backdrop-filter: blur(20px);
@@ -166,17 +164,17 @@ export default function Layout({ children, currentPageName }) {
                 transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
                 text-align: right;
               }
-              
+
               .meetiz-card:hover {
                 box-shadow: var(--card-shadow-hover);
                 transform: translateY(-2px);
               }
-              
+
               .meetiz-button-primary {
                 background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
                 transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
               }
-              
+
               .meetiz-button-primary:hover {
                 transform: translateY(-1px);
                 box-shadow: 0 10px 25px -3px rgba(37, 99, 235, 0.3);
@@ -188,12 +186,12 @@ export default function Layout({ children, currentPageName }) {
                   max-width: none;
                   padding: 2rem;
                 }
-                
+
                 .stats-grid {
                   grid-template-columns: repeat(4, 1fr);
                   gap: 1.5rem;
                 }
-                
+
                 .dashboard-grid {
                   grid-template-columns: 2fr 1fr;
                   gap: 2rem;
@@ -204,34 +202,34 @@ export default function Layout({ children, currentPageName }) {
               .flex {
                 direction: rtl;
               }
-              
+
               .grid {
                 direction: rtl;
               }
-              
+
               /* תיקון כיוון טקסט בכרטיסים */
               .card-content, .card-header {
                 direction: rtl;
                 text-align: right;
               }
-              
+
               /* תיקון מיקום אייקונים */
               .mr-2 {
                 margin-right: 0.5rem;
                 margin-left: 0;
               }
-              
+
               .ml-2 {
                 margin-left: 0.5rem;
                 margin-right: 0;
               }
-              
+
               /* תיקון כפתורים */
               .btn-rtl {
                 direction: rtl;
                 text-align: center;
               }
-              
+
               /* תיקון popover וdropdown */
               .popover-content, .dropdown-content {
                 direction: rtl;
@@ -243,26 +241,26 @@ export default function Layout({ children, currentPageName }) {
                 display: flex !important;
                 visibility: visible !important;
               }
-              
+
               /* תיקון תפריט נווט */
               .nav-item {
                 direction: rtl;
               }
-              
+
               /* תיקון overflow במובייל */
               .mobile-nav {
                 direction: rtl;
               }
-              
+
               .mobile-nav::-webkit-scrollbar {
                 height: 4px;
               }
-              
+
               .mobile-nav::-webkit-scrollbar-track {
                 background: #f1f5f9;
                 border-radius: 2px;
               }
-              
+
               .mobile-nav::-webkit-scrollbar-thumb {
                 background: #cbd5e1;
                 border-radius: 2px;

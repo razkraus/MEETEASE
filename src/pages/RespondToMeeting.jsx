@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Meeting, Response, Contact, Notification } from "@/api/entities";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -58,34 +58,34 @@ export default function RespondToMeeting() {
       if (meetings.length > 0) {
         const meetingData = meetings[0];
         setMeeting(meetingData);
-        
+
         // Check if user already responded
         if (participantEmailFromUrl) {
           const existingResponses = await Response.filter({
             meeting_id: meetingId,
             participant_email: participantEmailFromUrl
           });
-          
+
           if (existingResponses.length > 0) {
             const response = existingResponses[0];
             setExistingResponse(response);
-            
+
             // Pre-fill form with existing response data
             setParticipantName(response.participant_name || "");
             setParticipantEmail(response.participant_email || "");
             setSelectedDates(response.available_dates || []);
             setTravelTimeMinutes(response.travel_time_minutes || 0);
             setNotes(response.notes || "");
-            
+
             // If it's a declined response, set up decline mode
             if (response.status === 'declined') {
               setIsDeclining(true);
               setDeclineReason(response.notes || "");
             }
-            
+
             setIsUpdating(true);
           }
-          
+
           // Load contact data if available
           const loadedFromContact = await loadExistingContactData(participantEmailFromUrl, meetingData.organization_id);
           if (!loadedFromContact && !existingResponse) {
@@ -111,11 +111,11 @@ export default function RespondToMeeting() {
         email: email,
         organization_id: organizationId
       });
-      
+
       if (contacts.length > 0) {
         const contact = contacts[0];
         setExistingContact(contact);
-        
+
         // Only pre-fill if we don't have existing response data
         if (!existingResponse) {
           setParticipantName(contact.name || "");
@@ -149,7 +149,7 @@ export default function RespondToMeeting() {
       alert("אנא מלא את השדות הנדרשים ובחר לפחות מועד אחד.");
       return;
     }
-    
+
     if (!existingContact && (!company || !title || !phone)) {
         alert("אנא מלא את כל שדות החובה: שם מלא, אימייל, חברה, תפקיד, וטלפון.");
         return;
@@ -200,12 +200,12 @@ export default function RespondToMeeting() {
         });
         contactCreated = true;
       }
-      
+
       // Update participant status in Meeting entity
       if (!existingResponse) {
         const meetingToUpdate = await Meeting.get(meeting.id);
         if (meetingToUpdate && meetingToUpdate.participants) {
-          const updatedParticipants = meetingToUpdate.participants.map(p => 
+          const updatedParticipants = meetingToUpdate.participants.map(p =>
             p.email === participantEmail ? { ...p, status: 'responded' } : p
           );
           await Meeting.update(meeting.id, { participants: updatedParticipants });
@@ -236,7 +236,7 @@ export default function RespondToMeeting() {
         isNewContact: contactCreated,
         isUpdate: !!existingResponse
       });
-      
+
       setHasSubmitted(true);
       setSubmissionStatus('approved');
     } catch (error) {
@@ -245,7 +245,7 @@ export default function RespondToMeeting() {
     }
     setIsSubmitting(false);
   };
-  
+
   const handleDeclineSubmit = async () => {
     if (!declineReason) {
       alert("אנא הכנס סיבה לסירוב.");
@@ -255,7 +255,7 @@ export default function RespondToMeeting() {
       alert("אנא ודא שהשם והאימייל שלך מולאו כראוי.");
       return;
     }
-    
+
     setIsSubmitting(true);
     try {
       const responseData = {
@@ -279,7 +279,7 @@ export default function RespondToMeeting() {
       if (!existingResponse) {
         const meetingToUpdate = await Meeting.get(meeting.id);
         if (meetingToUpdate && meetingToUpdate.participants) {
-          const updatedParticipants = meetingToUpdate.participants.map(p => 
+          const updatedParticipants = meetingToUpdate.participants.map(p =>
             p.email === participantEmail ? { ...p, status: 'responded' } : p
           );
           await Meeting.update(meeting.id, { participants: updatedParticipants });
@@ -312,7 +312,7 @@ export default function RespondToMeeting() {
     }
     setIsSubmitting(false);
   };
-  
+
   const sendDeclineNotificationToOrganizer = async (meeting, data) => {
     const dashboardLink = `${window.location.origin}${createPageUrl("MyMeetings")}`;
 
@@ -504,7 +504,7 @@ export default function RespondToMeeting() {
                 <span class="label">טלפון:</span>
                 <span class="value">${participantData.phone}</span>
               </div>
-              
+
               ${participantData.travelTimeMinutes > 0 ? `
                 <div class="info-row">
                   <span class="label">זמן נסיעה:</span>
@@ -606,13 +606,13 @@ export default function RespondToMeeting() {
             )}
           </div>
           <h2 className="text-2xl font-bold text-slate-900 mb-4">
-            {submissionStatus === 'approved' ? 
-              (isUpdating ? "התגובה עודכנה בהצלחה!" : "תודה על התגובה!") : 
+            {submissionStatus === 'approved' ?
+              (isUpdating ? "התגובה עודכנה בהצלחה!" : "תודה על התגובה!") :
               (isUpdating ? "העדכון לסירוב נשלח" : "הסירוב נשלח")
             }
           </h2>
           <p className="text-slate-600 mb-6">
-            {submissionStatus === 'approved' 
+            {submissionStatus === 'approved'
               ? (isUpdating ? "התגובה המעודכנת שלך נרשמה בהצלחה. מזמין הישיבה יקבל עדכון." : "התגובה שלך נרשמה בהצלחה. מזמין הישיבה יקבע את המועד הסופי ויעדכן אותך.")
               : "מזמין הישיבה קיבל את הודעת הסירוב שלך."
             }
@@ -663,7 +663,7 @@ export default function RespondToMeeting() {
             {meeting.description && (
               <p className="text-slate-700">{meeting.description}</p>
             )}
-            
+
             <div className="grid md:grid-cols-2 gap-4 text-sm">
               {meeting.location && (
                 <div className="flex items-center gap-2">
@@ -769,8 +769,8 @@ export default function RespondToMeeting() {
                     <Label htmlFor="travel_time" className="font-semibold text-green-800">
                       זמן הנסיעה שלך (לכל כיוון)
                     </Label>
-                    <Select 
-                      value={travelTimeMinutes.toString()} 
+                    <Select
+                      value={travelTimeMinutes.toString()}
                       onValueChange={(value) => setTravelTimeMinutes(parseInt(value))}
                     >
                       <SelectTrigger className="rounded-xl bg-white">

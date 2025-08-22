@@ -1,5 +1,3 @@
-
-import React from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, Calendar, UserCog, Lock, Home } from "lucide-react"; // Added Home icon
@@ -70,7 +68,7 @@ export default function QuickActions({ canCreateMeetings }) {
             </Link>
           )
         ))}
-        
+
         <div className="pt-4 border-t border-slate-200">
           <p className="text-xs text-slate-500 text-center">
             💡 טיפ: ישיבות חיצוניות מחייבות אישור מועדים מהמשתתפים
