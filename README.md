@@ -1,6 +1,8 @@
 # MeetEase
 
-This app is a Vite + React application configured to run locally without any external Base44 dependencies.
+This app is a Vite + React application configured to run **entirely in the browser** using localStorage. All
+former Base44 SDK calls have been replaced with lightweight stubs so the project runs without any external
+services.
 
 ## Running the app
 
@@ -21,6 +23,8 @@ npm run build
 npm test
 npm run lint
 ```
+
+These commands run the built-in unit tests (using the Node test runner) and the ESLint linter.
 
 ## Calendar integrations
 
