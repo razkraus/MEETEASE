@@ -27,4 +27,3 @@ npm run lint
 Use the "Add to Google Calendar" and "Add to Outlook" buttons shown after creating a meeting to quickly place the event on your personal calendar. These helpers open the appropriate provider in a new tab using only client-side code.
 
 For more information and support, please contact the project maintainers.
-
