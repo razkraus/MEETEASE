@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Plus, X, Calendar as CalendarIcon, Wand2, Loader2, Zap } from "lucide-react";
@@ -7,6 +7,7 @@ import { format } from "date-fns";
 import { he } from "date-fns/locale";
 import { Card, CardContent } from '@/components/ui/card';
 import WeeklyCalendarView from './WeeklyCalendarView';
+import { suggestMeetingTimes } from '@/api/scheduler';
 
 export default function MeetingDates({ data, onChange }) {
   const [isFinding, setIsFinding] = useState(false);
@@ -47,26 +48,16 @@ export default function MeetingDates({ data, onChange }) {
     handleDateTimeSelect(new Date(suggestion.datetime));
   };
   
-  const findBestTimes = () => {
+  const findBestTimes = async () => {
     setIsFinding(true);
     setSuggestedTimes([]);
-    setTimeout(() => {
-      const today = new Date();
-      const mockSuggestions = [
-        { hours: 10, minutes: 0, days: 1 },
-        { hours: 14, minutes: 30, days: 1 },
-        { hours: 9, minutes: 0, days: 2 },
-        { hours: 16, minutes: 0, days: 3 },
-      ].map(s => {
-        const dt = new Date(today.getFullYear(), today.getMonth(), today.getDate() + s.days, s.hours, s.minutes);
-        return {
-          datetime: dt.toISOString(),
-          date_label: format(dt, "EEEE, d MMMM yyyy 'בשעה' HH:mm", { locale: he })
-        }
-      });
-      setSuggestedTimes(mockSuggestions);
-      setIsFinding(false);
-    }, 1500);
+    const calendars = await Promise.all((data.participants || []).map(p => p.calendar || []));
+    const suggestions = suggestMeetingTimes(calendars);
+    setSuggestedTimes(suggestions.map(s => ({
+      datetime: s.datetime,
+      date_label: format(new Date(s.datetime), "EEEE, d MMMM yyyy 'בשעה' HH:mm", { locale: he })
+    })));
+    setIsFinding(false);
   };
 
   return (

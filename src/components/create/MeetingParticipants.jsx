@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -143,12 +143,12 @@ export default function MeetingParticipants({ data, onChange }) {
   const meetingType = hasExternalParticipants ? 'external' : 'internal';
   
   // Update meeting type in parent
-  React.useEffect(() => {
+  useEffect(() => {
     onChange({
       ...data,
       meeting_type: meetingType
     });
-  }, [meetingType]);
+  }, [meetingType, data, onChange]);
 
   return (
     <div className="space-y-6">

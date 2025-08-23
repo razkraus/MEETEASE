@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect } from "react";
+import { Fragment, useState, useEffect } from "react";
 import { User, Meeting } from "@/api/entities"; // Corrected import order
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Check } from "lucide-react";
@@ -7,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { AnimatePresence, motion } from "framer-motion";
 // The SendEmail integration is no longer needed for automatic email sending
-// import { SendEmail } from "@/api/integrations"; 
+// import { SendEmail } from "@/api/integrations";
 
 import MeetingBasicInfo from "../components/create/MeetingBasicInfo";
 import MeetingDates from "../components/create/MeetingDates";
@@ -138,9 +137,9 @@ export default function CreateMeeting() {
     setIsCreating(true);
     try {
       const invitationCode = Math.random().toString(36).substring(2, 15);
-      
+
       console.log("Creating meeting with participants:", meetingData.participants);
-      
+
       // יצירת הישיבה
       const meeting = await Meeting.create({
         ...meetingData,
@@ -148,33 +147,33 @@ export default function CreateMeeting() {
         status: "sent",
         invitation_code: invitationCode
       });
-      
+
       // יצירת קישורי הזמנה עבור כל משתתף
       const invitationLinks = meetingData.participants.map(participant => ({
         name: participant.name,
         email: participant.email,
         link: `${window.location.origin}${createPageUrl("RespondToMeeting")}?meeting=${meeting.id}&code=${meeting.invitation_code}&email=${encodeURIComponent(participant.email)}`
       }));
-      
+
       // שמירת הקישורים למסך ההצלחה
       setCreatedMeeting({
         ...meeting,
         invitationLinks: invitationLinks
       });
-      
+
       console.log("Meeting created successfully:", meeting.id);
       console.log("Invitation links generated:", invitationLinks);
 
       // הצגת הודעת הצלחה עם פרטי השיתוף
       alert(`הישיבה נוצרה בהצלחה!\n\nלא ניתן לשלוח מיילים אוטומטית למשתתפים חיצוניים.\nתוכל לשתף איתם את קישורי ההזמנה ישירות במסך הבא.`);
-      
+
       setIsSuccess(true);
-      
+
       // העברה לדף הבית אחרי 10 שניות (יותר זמן לראות את הקישורים)
       setTimeout(() => {
         navigate(createPageUrl("Dashboard"));
       }, 10000);
-      
+
     } catch (error) {
       console.error("Error creating meeting:", error);
       alert('שגיאה ביצירת הישיבה. אנא נסה שוב.');
@@ -218,7 +217,7 @@ export default function CreateMeeting() {
           </Button>
           <div>
             <h1 className="text-2xl md:text-3xl font-bold text-slate-900">
-              {new URLSearchParams(window.location.search).get('duplicate') === 'true' ? 
+              {new URLSearchParams(window.location.search).get('duplicate') === 'true' ?
                 'שכפול ישיבה' : 'יצירת ישיבה חדשה'}
             </h1>
             {new URLSearchParams(window.location.search).get('duplicate') === 'true' && (
@@ -237,11 +236,11 @@ export default function CreateMeeting() {
         {/* Progress Stepper */}
         <div className="flex justify-between items-center mb-10 px-2">
           {steps.map((step, index) => (
-            <React.Fragment key={step.number}>
+            <Fragment key={step.number}>
               <div className="flex flex-col items-center text-center">
                 <div className={`flex items-center justify-center w-10 h-10 rounded-full font-bold transition-all duration-300 ${
-                  currentStep > step.number 
-                    ? 'bg-green-500 text-white' 
+                  currentStep > step.number
+                    ? 'bg-green-500 text-white'
                     : currentStep === step.number
                     ? 'bg-blue-600 text-white ring-4 ring-blue-200'
                     : 'bg-slate-200 text-slate-600'
@@ -253,7 +252,7 @@ export default function CreateMeeting() {
               {index < steps.length - 1 && (
                 <div className={`flex-1 h-1 mx-2 md:mx-4 rounded-full transition-colors duration-500 ${currentStep > index + 1 ? 'bg-green-500' : 'bg-slate-200'}`} />
               )}
-            </React.Fragment>
+            </Fragment>
           ))}
         </div>
 
@@ -267,14 +266,14 @@ export default function CreateMeeting() {
               exit={{ opacity: 0, x: -50 }}
               transition={{ duration: 0.3 }}
             >
-              <CurrentStepComponent 
+              <CurrentStepComponent
                 data={meetingData}
                 onChange={setMeetingData}
               />
             </motion.div>
           </AnimatePresence>
         </div>
-        
+
         {/* Navigation */}
         <div className="flex justify-between">
           <Button
@@ -285,7 +284,7 @@ export default function CreateMeeting() {
           >
             חזור
           </Button>
-          
+
           {currentStep < steps.length ? (
             <Button
               onClick={handleNext}

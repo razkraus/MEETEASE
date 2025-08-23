@@ -1,11 +1,22 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { format, addDays, startOfWeek, addWeeks, subWeeks, setHours, setMinutes, isToday, isBefore, isEqual, startOfDay } from 'date-fns';
 import { he } from 'date-fns/locale';
 import { ChevronLeft, ChevronRight, Plus, Check } from 'lucide-react';
+import { Meeting } from '@/api/entities';
 
 export default function WeeklyCalendarView({ selectedDates, onDateTimeSelect, duration = 60 }) {
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [busy, setBusy] = useState([]);
+
+  useEffect(() => {
+    async function load() {
+      const meetings = await Meeting.list();
+      const dates = meetings.flatMap(m => m.proposed_dates || []).map(d => d.datetime);
+      setBusy(dates);
+    }
+    load();
+  }, []);
 
   const weekDays = useMemo(() => {
     // Week starts on Sunday (0) for Hebrew locale
@@ -77,7 +88,9 @@ export default function WeeklyCalendarView({ selectedDates, onDateTimeSelect, du
             [
               ...weekDays.map((day) => {
                 const slotDateTime = setMinutes(setHours(day, parseInt(time.split(':')[0])), parseInt(time.split(':')[1]));
-                const disabled = isBefore(slotDateTime, new Date());
+                const disabledPast = isBefore(slotDateTime, new Date());
+                const busySlot = busy.some(d => isEqual(new Date(d), slotDateTime));
+                const disabled = disabledPast || busySlot;
                 const selected = isSelected(day, time);
                 return (
                   <div key={`${day.toISOString()}-${time}`} className="border-t border-slate-100 flex items-center justify-center p-1 min-h-[4rem]">

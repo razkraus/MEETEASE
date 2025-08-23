@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Notification, User } from '@/api/entities';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -25,48 +25,28 @@ export default function NotificationBell() {
     loadUser();
   }, []);
 
-  useEffect(() => {
-    if (user?.email) {
-      loadNotifications();
-      // Set interval to try loading notifications every 30 seconds
-      const interval = setInterval(loadNotifications, 30000);
-      return () => clearInterval(interval);
-    }
-  }, [user]);
-
-  const loadUser = async () => {
-    try {
-      const currentUser = await User.me();
-      setUser(currentUser);
-      setError(null); // Clear any previous errors
-    } catch (error) {
-      console.error("Error loading user:", error);
-      setError("שגיאה בטעינת פרטי משתמש");
-    }
-  };
-
-  const loadNotifications = async (isRetry = false) => {
+  const loadNotifications = useCallback(async (isRetry = false) => {
     if (!user?.email) return;
-    
+
     try {
       if (!isRetry) {
         setIsLoading(true);
       }
       setError(null);
-      
+
       const notificationsData = await Notification.filter(
         { user_email: user.email },
         "-created_date",
         20
       );
-      
+
       setNotifications(notificationsData || []);
       setUnreadCount((notificationsData || []).filter(n => !n.is_read).length);
       setRetryCount(0); // Reset retry count on success
-      
+
     } catch (error) {
       console.error("Error loading notifications:", error);
-      
+
       // If this is a network error and we haven't retried too many times, try again
       if (error.message.includes("Network") && retryCount < 3) {
         setTimeout(() => {
@@ -80,6 +60,26 @@ export default function NotificationBell() {
       }
     } finally {
       setIsLoading(false);
+    }
+  }, [user, retryCount]);
+
+  useEffect(() => {
+    if (user?.email) {
+      loadNotifications();
+      // Set interval to try loading notifications every 30 seconds
+      const interval = setInterval(loadNotifications, 30000);
+      return () => clearInterval(interval);
+    }
+  }, [loadNotifications, user]);
+
+  const loadUser = async () => {
+    try {
+      const currentUser = await User.me();
+      setUser(currentUser);
+      setError(null); // Clear any previous errors
+    } catch (error) {
+      console.error("Error loading user:", error);
+      setError("שגיאה בטעינת פרטי משתמש");
     }
   };
 

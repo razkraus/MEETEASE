@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User, Meeting, TeamMember } from '@/api/entities';
 import { createPageUrl } from '@/utils';
@@ -25,6 +25,46 @@ export default function CheckAvailability() {
   const [error, setError] = useState('');
   const [open, setOpen] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
+
+  const handleFindTimes = useCallback(async () => {
+    if (selectedMembers.length === 0) {
+      setError("אנא בחר לפחות חבר בארגון אחד.");
+      return;
+    }
+    setError('');
+    setIsFinding(true);
+    setSuggestions([]);
+
+    try {
+      const selectedEmails = selectedMembers.map(m => m.email);
+      const currentUser = await User.me();
+
+      // Get all confirmed meetings in the organization
+      const allMeetings = await Meeting.filter({ organization_id: currentUser.organization_id, status: 'confirmed' });
+
+      // Filter meetings for the selected date only - but only consider meetings where the selected members are participants
+      const busySlots = allMeetings
+        .filter(m => {
+          if (!m.final_date || !m.participants) return false;
+          const meetingDate = new Date(m.final_date);
+          return isSameDay(meetingDate, selectedDate) &&
+                 m.participants.some(p => selectedEmails.includes(p.email));
+        })
+        .map(m => {
+          const start = new Date(m.final_date);
+          const end = add(start, { minutes: m.duration_minutes });
+          return { start, end };
+        });
+
+      const foundSlots = findAvailableSlotsForDate(selectedDate, busySlots, duration);
+      setSuggestions(foundSlots);
+    } catch (e) {
+      console.error("Error finding slots:", e);
+      setError("אירעה שגיאה במציאת זמנים פנויים.");
+    } finally {
+      setIsFinding(false);
+    }
+  }, [selectedMembers, selectedDate, duration]);
 
   useEffect(() => {
     const loadTeamMembers = async () => {
@@ -67,47 +107,7 @@ export default function CheckAvailability() {
     if (selectedMembers.length > 0) {
       handleFindTimes();
     }
-  }, [selectedDate, selectedMembers]);
-
-  const handleFindTimes = async () => {
-    if (selectedMembers.length === 0) {
-      setError("אנא בחר לפחות חבר בארגון אחד.");
-      return;
-    }
-    setError('');
-    setIsFinding(true);
-    setSuggestions([]);
-
-    try {
-      const selectedEmails = selectedMembers.map(m => m.email);
-      const currentUser = await User.me();
-      
-      // Get all confirmed meetings in the organization
-      const allMeetings = await Meeting.filter({ organization_id: currentUser.organization_id, status: 'confirmed' });
-      
-      // Filter meetings for the selected date only - but only consider meetings where the selected members are participants
-      const busySlots = allMeetings
-        .filter(m => {
-          if (!m.final_date || !m.participants) return false;
-          const meetingDate = new Date(m.final_date);
-          return isSameDay(meetingDate, selectedDate) && 
-                 m.participants.some(p => selectedEmails.includes(p.email));
-        })
-        .map(m => {
-          const start = new Date(m.final_date);
-          const end = add(start, { minutes: m.duration_minutes });
-          return { start, end };
-        });
-
-      const foundSlots = findAvailableSlotsForDate(selectedDate, busySlots, duration);
-      setSuggestions(foundSlots);
-    } catch (e) {
-      console.error("Error finding slots:", e);
-      setError("אירעה שגיאה במציאת זמנים פנויים.");
-    } finally {
-      setIsFinding(false);
-    }
-  };
+  }, [handleFindTimes, selectedMembers.length]);
 
   const findAvailableSlotsForDate = (date, busySlots, meetingDuration) => {
     const availableSlots = [];

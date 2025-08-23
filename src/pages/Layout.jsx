@@ -1,80 +1,69 @@
 
-
-import React from "react";
 import { Link, useLocation } from "react-router-dom";
+import { useState, useEffect } from 'react';
 import { createPageUrl } from "@/utils";
-import { Calendar, Plus, Users, Settings, Home, Contact, UserCog, Crown, Menu, Bell, History, Search, LifeBuoy } from "lucide-react"; // Added LifeBuoy
+import { Calendar, Plus, Users, Settings, Home, Contact, UserCog, Crown, History, Search, LifeBuoy, CreditCard, Image } from "lucide-react";
 import AuthWrapper from "./components/auth/AuthWrapper";
 import NotificationBell from "./components/dashboard/NotificationBell";
-
-const navigationItems = [
-  {
-    title: "בית", // Changed from "דשבורד" to "בית"
-    url: createPageUrl("Dashboard"),
-    icon: Home, // Changed from BarChart3 to Home
-  },
-  {
-    title: "בדיקת זמינות",
-    url: createPageUrl("CheckAvailability"),
-    icon: Search,
-  },
-  {
-    title: "ישיבה חדשה",
-    url: createPageUrl("CreateMeeting"),
-    icon: Plus,
-  },
-  {
-    title: "הישיבות שלי",
-    url: createPageUrl("MyMeetings"),
-    icon: Calendar,
-  },
-  {
-    title: "היסטוריה", // New item: Meeting History
-    url: createPageUrl("MeetingHistory"),
-    icon: History,
-  },
-  {
-    title: "חברים בארגון",
-    url: createPageUrl("OrganizationMembers"),
-    icon: UserCog,
-  },
-  {
-    title: "אנשי קשר",
-    url: createPageUrl("Contacts"),
-    icon: Contact,
-  },
-  {
-    title: "צור קשר", // New item: Contact Us
-    url: createPageUrl("ContactUs"),
-    icon: LifeBuoy,
-  },
-  {
-    title: "מנויים",
-    url: createPageUrl("Subscription"),
-    icon: Crown,
-  },
-  {
-    title: "הגדרות",
-    url: createPageUrl("Settings"),
-    icon: Settings,
-  },
-];
+import { t, setLanguage, getLanguage } from '@/i18n';
+import { Organization, User } from '@/api/entities';
 
 export default function Layout({ children, currentPageName }) {
   const location = useLocation();
+  const [lang, setLang] = useState(getLanguage());
+  const [logo, setLogo] = useState(null);
+
+  useEffect(() => {
+    async function load() {
+      const user = await User.me();
+      if (user.organization_id) {
+        const org = await Organization.get(user.organization_id);
+        setLogo(org?.branding?.logoUrl || null);
+      }
+    }
+    load();
+    const handler = () => setLang(getLanguage());
+    window.addEventListener('languagechange', handler);
+    return () => window.removeEventListener('languagechange', handler);
+  }, []);
+
+  const navigationItems = [
+    { title: t('homeNav'), url: createPageUrl('Dashboard'), icon: Home },
+    { title: t('checkNav'), url: createPageUrl('CheckAvailability'), icon: Search },
+    { title: t('newMeetingNav'), url: createPageUrl('CreateMeeting'), icon: Plus },
+    { title: t('myMeetingsNav'), url: createPageUrl('MyMeetings'), icon: Calendar },
+    { title: t('historyNav'), url: createPageUrl('MeetingHistory'), icon: History },
+    { title: t('orgMembersNav'), url: createPageUrl('OrganizationMembers'), icon: UserCog },
+    { title: t('contactsNav'), url: createPageUrl('Contacts'), icon: Contact },
+    { title: t('contactUsNav'), url: createPageUrl('ContactUs'), icon: LifeBuoy },
+    { title: t('subscriptionNav'), url: createPageUrl('Subscription'), icon: Crown },
+    { title: t('brandingNav'), url: createPageUrl('OfficeBranding'), icon: Image },
+    { title: t('paymentNav'), url: createPageUrl('OfficePayment'), icon: CreditCard },
+    { title: t('settingsNav'), url: createPageUrl('Settings'), icon: Settings },
+  ];
+
+  const toggleLang = () => {
+    const next = lang === 'he' ? 'en' : 'he';
+    setLanguage(next);
+    setLang(next);
+  };
 
   return (
     <AuthWrapper>
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50" dir="rtl">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50" dir={lang === 'he' ? 'rtl' : 'ltr'}>
         {/* תפריט עליון קבוע */}
         <header className="bg-white/95 backdrop-blur-sm border-b border-slate-200 sticky top-0 z-50 shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-16">
               {/* לוגו וכותרת */}
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg flex items-center justify-center shadow-lg">
-                  <Users className="w-5 h-5 text-white" />
-                </div>
+                {logo ? (
+                  <img src={logo} alt="logo" className="w-8 h-8 rounded-lg shadow-lg" />
+                ) : (
+                  <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg flex items-center justify-center shadow-lg">
+                    <Users className="w-5 h-5 text-white" />
+                  </div>
+                )}
                 <div>
                   <h1 className="font-bold text-lg text-slate-900">מיטיז</h1>
                   <p className="text-xs text-slate-500 hidden sm:block">יצירת ישיבות חכמות</p>
@@ -99,8 +88,9 @@ export default function Layout({ children, currentPageName }) {
                 ))}
               </nav>
 
-              {/* פעמון התראות */}
-              <div className="flex items-center">
+              {/* פעמון התראות ושפה */}
+              <div className="flex items-center gap-4">
+                <button onClick={toggleLang} className="text-sm text-slate-600">{lang.toUpperCase()}</button>
                 <NotificationBell />
               </div>
             </div>
@@ -139,25 +129,25 @@ export default function Layout({ children, currentPageName }) {
                 --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
                 --card-shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
               }
-              
+
               /* תיקונים עבור RTL */
               * {
                 text-align: right;
               }
-              
+
               .text-left {
                 text-align: left !important;
               }
-              
+
               .text-center {
                 text-align: center !important;
               }
-              
+
               input, textarea, select {
                 text-align: right;
                 direction: rtl;
               }
-              
+
               .meetiz-card {
                 background: rgba(255, 255, 255, 0.95);
                 backdrop-filter: blur(20px);
@@ -166,17 +156,17 @@ export default function Layout({ children, currentPageName }) {
                 transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
                 text-align: right;
               }
-              
+
               .meetiz-card:hover {
                 box-shadow: var(--card-shadow-hover);
                 transform: translateY(-2px);
               }
-              
+
               .meetiz-button-primary {
                 background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
                 transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
               }
-              
+
               .meetiz-button-primary:hover {
                 transform: translateY(-1px);
                 box-shadow: 0 10px 25px -3px rgba(37, 99, 235, 0.3);
@@ -188,12 +178,12 @@ export default function Layout({ children, currentPageName }) {
                   max-width: none;
                   padding: 2rem;
                 }
-                
+
                 .stats-grid {
                   grid-template-columns: repeat(4, 1fr);
                   gap: 1.5rem;
                 }
-                
+
                 .dashboard-grid {
                   grid-template-columns: 2fr 1fr;
                   gap: 2rem;
@@ -204,34 +194,34 @@ export default function Layout({ children, currentPageName }) {
               .flex {
                 direction: rtl;
               }
-              
+
               .grid {
                 direction: rtl;
               }
-              
+
               /* תיקון כיוון טקסט בכרטיסים */
               .card-content, .card-header {
                 direction: rtl;
                 text-align: right;
               }
-              
+
               /* תיקון מיקום אייקונים */
               .mr-2 {
                 margin-right: 0.5rem;
                 margin-left: 0;
               }
-              
+
               .ml-2 {
                 margin-left: 0.5rem;
                 margin-right: 0;
               }
-              
+
               /* תיקון כפתורים */
               .btn-rtl {
                 direction: rtl;
                 text-align: center;
               }
-              
+
               /* תיקון popover וdropdown */
               .popover-content, .dropdown-content {
                 direction: rtl;
@@ -243,26 +233,26 @@ export default function Layout({ children, currentPageName }) {
                 display: flex !important;
                 visibility: visible !important;
               }
-              
+
               /* תיקון תפריט נווט */
               .nav-item {
                 direction: rtl;
               }
-              
+
               /* תיקון overflow במובייל */
               .mobile-nav {
                 direction: rtl;
               }
-              
+
               .mobile-nav::-webkit-scrollbar {
                 height: 4px;
               }
-              
+
               .mobile-nav::-webkit-scrollbar-track {
                 background: #f1f5f9;
                 border-radius: 2px;
               }
-              
+
               .mobile-nav::-webkit-scrollbar-thumb {
                 background: #cbd5e1;
                 border-radius: 2px;

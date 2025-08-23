@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Meeting, Response, User, Organization } from "@/api/entities";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -28,33 +27,33 @@ export default function Dashboard() {
     try {
       const currentUser = await User.me();
       setUser(currentUser);
-      
+
       if (currentUser.organization_id) {
         // Fetch organization
         const orgDataArray = await Organization.filter({ id: currentUser.organization_id });
         const orgData = orgDataArray.length > 0 ? orgDataArray[0] : null;
         setOrganization(orgData);
-        
+
         // Fetch only meetings that the current user created OR is a participant in
         const allMeetings = await Meeting.filter({ organization_id: currentUser.organization_id }, "-created_date");
-        
+
         // Filter meetings to show only those created by current user OR where user is a participant
         const userMeetings = allMeetings.filter(meeting => {
           // Show if user created the meeting
           if (meeting.created_by === currentUser.email) {
             return true;
           }
-          
+
           // Show if user is a participant
           if (Array.isArray(meeting.participants) && meeting.participants.some(p => p.email === currentUser.email)) {
             return true;
           }
-          
+
           return false;
         });
-        
+
         setMeetings(userMeetings || []);
-        
+
         // Fetch responses only for meetings the user can see
         let responsesData = [];
         if (userMeetings && userMeetings.length > 0) {
@@ -92,7 +91,7 @@ export default function Dashboard() {
     }
     return m.status !== 'cancelled'; // Other statuses (sent, etc.) are considered active
   });
-  
+
   const pastMeetings = meetings.filter(m => {
     if (m.status === 'confirmed' && m.final_date) {
       return new Date(m.final_date) < currentDate;
@@ -148,10 +147,10 @@ export default function Dashboard() {
           <Alert className="mb-6 border-orange-200 bg-orange-50">
             <AlertCircle className="h-4 w-4 text-orange-600" />
             <AlertDescription className="text-orange-800">
-              אתם משתמשים בגרסה החינמית של מיטיז. 
+              אתם משתמשים בגרסה החינמית של מיטיז.
               <Link to={createPageUrl("Subscription")} className="underline font-semibold">
                 שדרגו לפרימיום
-              </Link> 
+              </Link>
               {" "}כדי ליהנות מכל התכונות.
             </AlertDescription>
           </Alert>
@@ -171,7 +170,7 @@ export default function Dashboard() {
 
         <div className="space-y-8">
           <CollapsibleStats stats={stats} />
-          <MeetingHistory 
+          <MeetingHistory
             pastMeetings={pastMeetings}
             isLoading={isLoading}
           />
